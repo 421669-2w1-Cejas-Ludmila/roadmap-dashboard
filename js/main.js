@@ -43,6 +43,73 @@ const APP_STATE = {
 };
 
 // =========================================================================
+// CONFIGURACIÓN DE INSIGNIAS (Dinámicas)
+// Cada insignia tiene: id, emoji, nombre, descripción de cómo se gana,
+// y una función `earned(state)` que retorna true si el usuario la obtuvo.
+// =========================================================================
+const BADGES_CONFIG = [
+  {
+    id: 'first-blood',
+    emoji: '🏆',
+    name: 'Primer Desafío Superado',
+    how: 'Se obtiene al completar tu primer nodo del roadmap.',
+    earned: (s) => s.completedChallenges >= 1
+  },
+  {
+    id: 'fire-streak',
+    emoji: '🔥',
+    name: 'Racha de Fuego x3',
+    how: 'Se obtiene al completar 3 o más desafíos en el roadmap.',
+    earned: (s) => s.completedChallenges >= 3
+  },
+  {
+    id: 'bug-hunter',
+    emoji: '👾',
+    name: 'Bug Hunter Experto',
+    how: 'Se obtiene al superar el Nodo #2 (Estructuras de Grafos) con al menos 1 intento restante.',
+    earned: (s) => {
+      const node2 = (window.ROADMAP_NODES_CONFIG || []).find(n => n.id === 2);
+      return node2 && node2.status === 'COMPLETED' && node2.attempts > 0;
+    }
+  },
+  {
+    id: 'alchemist',
+    emoji: '🧪',
+    name: 'Alquimista de Código',
+    how: 'Se obtiene al alcanzar 4.000 XP o más.',
+    earned: (s) => s.xp >= 4000
+  },
+  {
+    id: 'gate-breaker',
+    emoji: '🚪',
+    name: 'Rompedor de Portones',
+    how: 'Se obtiene al superar tu primer Portón de XP.',
+    earned: (s) => s.clearedGates >= 1
+  },
+  {
+    id: 'rich',
+    emoji: '🪙',
+    name: 'Acumulador de Coins',
+    how: 'Se obtiene al acumular 1.000 o más coins.',
+    earned: (s) => s.coins >= 1000
+  },
+  {
+    id: 'top10',
+    emoji: '🌟',
+    name: 'Élite del Ranking',
+    how: 'Se obtiene al estar en el Top 10 del ranking de la cohorte.',
+    earned: (s) => s.rankPosition <= 10
+  },
+  {
+    id: 'survivor',
+    emoji: '❤️',
+    name: 'Sobreviviente',
+    how: 'Se obtiene al mantener las 3 vidas globales intactas.',
+    earned: (s) => s.lives >= 3
+  }
+];
+
+// =========================================================================
 // CONFIGURACIÓN DE LOS 12 NODOS DEL ROADMAP (3 REGIONES)
 // =========================================================================
 const ROADMAP_NODES_CONFIG = [
@@ -353,6 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 7. Inicializar Controlador del HUD y Modal de Desafío
   const hudController = new HUDController(APP_STATE, sceneManager, islandManager, avatarManager);
   window.HUDController = hudController;
+  window.ROADMAP_NODES_CONFIG = ROADMAP_NODES_CONFIG;
 
   // Global helper
   window.moverAvatarANodo = (origenId, destinoId) => {

@@ -1566,6 +1566,91 @@ body {
   color: var(--neon-red);
 }
 
+
 .optional-risk {
   color: var(--neon-green);
+}
+
+/* ---------- INSIGNIAS: Sección, Título y Ribbon ---------- */
+.badges-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.badges-title-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Insignia ganada */
+.badge-item.badge-earned {
+  opacity: 1;
+  cursor: pointer;
+  filter: drop-shadow(0 0 6px rgba(251,191,36,0.6));
+  transition: transform 0.15s, filter 0.15s;
+}
+.badge-item.badge-earned:hover {
+  transform: scale(1.25);
+  filter: drop-shadow(0 0 10px rgba(251,191,36,0.9));
+}
+
+/* Insignia bloqueada */
+.badge-item.badge-locked {
+  opacity: 0.25;
+  cursor: pointer;
+  filter: grayscale(1);
+  transition: opacity 0.15s, transform 0.15s;
+}
+.badge-item.badge-locked:hover {
+  opacity: 0.5;
+  transform: scale(1.1);
+}
+
+/* ---------- MODAL DE INSIGNIA ---------- */
+.badge-modal-box {
+  max-width: 420px;
+  width: 92%;
+}
+
+.badge-modal-emoji {
+  font-size: 2rem;
+}
+
+.badge-modal-big-emoji {
+  font-size: 5rem;
+  margin-bottom: 16px;
+  display: block;
+  animation: badge-pop 0.4s ease;
+}
+
+@keyframes badge-pop {
+  0%   { transform: scale(0.5); opacity: 0; }
+  70%  { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.badge-modal-how {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.badge-modal-status {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.badge-status-earned {
+  color: var(--neon-green);
+}
+
+.badge-status-locked {
+  color: #94a3b8;
 }

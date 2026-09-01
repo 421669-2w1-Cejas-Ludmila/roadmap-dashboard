@@ -70,13 +70,14 @@
           <span class="coins-counter" id="hud-coins-val">1.200</span>
         </div>
 
-        <!-- Cinta de Insignias Ganadas -->
-        <div class="badges-ribbon" title="Insignias obtenidas">
-          <div class="badge-item" title="Primer Desafío Superado">🏆</div>
-          <div class="badge-item" title="Racha de Fuego x5">🔥</div>
-          <div class="badge-item" title="Bug Hunter Experto">👾</div>
-          <div class="badge-item" title="Alquimista de Código">🧪</div>
+        <!-- Cinta de Insignias Ganadas (Dinámicas) -->
+        <div class="badges-section">
+          <span class="badges-title-label">INSIGNIAS</span>
+          <div class="badges-ribbon" id="badges-ribbon">
+            <!-- Generado dinámicamente por HUDController -->
+          </div>
         </div>
+
       </div>
     </header>
 
@@ -271,7 +272,31 @@
         </div>
       </div>
     </div>
+    <!-- ====================================================================
+         5. MODAL DE INSIGNIA (`#modal-badge`)
+         ==================================================================== -->
+    <div class="modal-backdrop" id="modal-badge">
+      <div class="modal-container badge-modal-box">
+        <div class="modal-header">
+          <div class="modal-title-area">
+            <span class="badge-modal-emoji" id="badge-modal-emoji">🏆</span>
+            <div>
+              <div class="challenge-region-tag">INSIGNIA</div>
+              <h2 id="badge-modal-name">Nombre</h2>
+            </div>
+          </div>
+          <button class="btn-close-modal" id="btn-close-badge-modal">✕</button>
+        </div>
+        <div class="modal-body" style="padding: 28px 24px; text-align:center;">
+          <div class="badge-modal-big-emoji" id="badge-modal-big-emoji">🏆</div>
+          <p class="badge-modal-how" id="badge-modal-how">Descripción de cómo se obtiene.</p>
+          <div class="badge-modal-status" id="badge-modal-status"></div>
+        </div>
+      </div>
+    </div>
+
   </div>
+
 
   <!-- Three.js y OrbitControls vía CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

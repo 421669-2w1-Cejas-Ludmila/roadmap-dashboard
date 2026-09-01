@@ -20,6 +20,10 @@ class HUDController {
     this.challengeModal = document.getElementById('modal-desafio');
     this.closeChallengeModalBtn = document.getElementById('btn-close-challenge-modal');
 
+    // Modal de insignia
+    this.badgeModal = document.getElementById('modal-badge');
+    this.closeBadgeModalBtn = document.getElementById('btn-close-badge-modal');
+
     this.initUI();
     this.bindEvents();
     this.renderLeaderboard();
@@ -27,6 +31,7 @@ class HUDController {
 
   initUI() {
     this.updateStatsUI();
+    this.renderBadges();
   }
 
   bindEvents() {
@@ -58,6 +63,58 @@ class HUDController {
         this.openChallengeModal(node);
       }
     });
+
+    // Cerrar Modal de Insignia
+    if (this.closeBadgeModalBtn) {
+      this.closeBadgeModalBtn.addEventListener('click', () => this.closeBadgeModal());
+    }
+    if (this.badgeModal) {
+      this.badgeModal.addEventListener('click', (e) => {
+        if (e.target === this.badgeModal) this.closeBadgeModal();
+      });
+    }
+  }
+
+  // =========================================================================
+  // SISTEMA DE INSIGNIAS DINÁMICAS
+  // =========================================================================
+  renderBadges() {
+    const ribbon = document.getElementById('badges-ribbon');
+    if (!ribbon || typeof BADGES_CONFIG === 'undefined') return;
+
+    ribbon.innerHTML = '';
+    BADGES_CONFIG.forEach((badge) => {
+      const isEarned = badge.earned(this.state);
+      const el = document.createElement('div');
+      el.className = `badge-item ${isEarned ? 'badge-earned' : 'badge-locked'}`;
+      el.textContent = badge.emoji;
+      el.title = isEarned ? badge.name : '???';
+      el.addEventListener('click', () => this.openBadgeModal(badge, isEarned));
+      ribbon.appendChild(el);
+    });
+  }
+
+  openBadgeModal(badge, isEarned) {
+    if (!this.badgeModal) return;
+    if (window.SFX) window.SFX.playClick();
+
+    document.getElementById('badge-modal-emoji').textContent = badge.emoji;
+    document.getElementById('badge-modal-big-emoji').textContent = isEarned ? badge.emoji : '🔒';
+    document.getElementById('badge-modal-name').textContent = isEarned ? badge.name : 'Insignia Bloqueada';
+    document.getElementById('badge-modal-how').textContent = badge.how;
+
+    const statusEl = document.getElementById('badge-modal-status');
+    if (isEarned) {
+      statusEl.innerHTML = `<span class="badge-status-earned">✅ ¡Insignia desbloqueada!</span>`;
+    } else {
+      statusEl.innerHTML = `<span class="badge-status-locked">🔒 Aún no la has ganado. ¡Sigue adelante!</span>`;
+    }
+
+    this.badgeModal.classList.add('active');
+  }
+
+  closeBadgeModal() {
+    if (this.badgeModal) this.badgeModal.classList.remove('active');
   }
 
   updateStatsUI() {
