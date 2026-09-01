@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROADMAP | Dashboard 3D</title>
+  
+  <!-- Google Fonts: Orbitron & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- CSS Principal -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="app-container">
+    <!-- Canvas 3D de Three.js -->
+    <canvas id="roadmap-canvas"></canvas>
+
+    <!-- Superposiciones visuales cinematográficas -->
+    <div class="viewport-overlay"></div>
+    <div class="scanlines"></div>
+
+    <!-- ====================================================================
+         1. TOP HUD HEADER
+         ==================================================================== -->
+    <header class="hud-header glass-panel">
+      <div class="hud-left">
+        <!-- Logo y Título Principal: ROADMAP -->
+        <div class="app-title-badge">
+          <div class="system-logo">⚡</div>
+          <div class="system-titles">
+            <h1>ROADMAP</h1>
+            <span>Tema 10 • 3 Regiones Pedagógicas (12 Desafíos)</span>
+          </div>
+        </div>
+
+        <!-- Indicador de Nivel y Barra de XP Separada -->
+        <div class="level-xp-container">
+          <div class="level-badge">
+            <span class="lbl">LVL</span>
+            <span class="val" id="hud-level-val">12</span>
+          </div>
+          <div class="xp-bar-wrapper">
+            <div class="xp-header">
+              <span class="xp-label">EXPERIENCIA</span>
+              <span class="xp-values"><span id="hud-xp-current">4.200</span> / <span id="hud-xp-max">5.000</span> XP</span>
+            </div>
+            <div class="xp-track">
+              <div class="xp-fill" id="hud-xp-fill"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hud-right">
+        <!-- Contador de 3 Vidas Globales -->
+        <div class="stat-chip" title="Vidas globales disponibles">
+          <div class="lives-group" id="hud-lives-group">
+            <span class="heart-icon">❤️</span>
+            <span class="heart-icon">❤️</span>
+            <span class="heart-icon">❤️</span>
+          </div>
+        </div>
+
+        <!-- Contador de Monedas -->
+        <div class="stat-chip" title="Monedas ganadas">
+          <span style="font-size: 1.1rem;">🟡</span>
+          <span class="coins-counter" id="hud-coins-val">1.200</span>
+        </div>
+
+        <!-- Cinta de Insignias Ganadas -->
+        <div class="badges-ribbon" title="Insignias obtenidas">
+          <div class="badge-item" title="Primer Desafío Superado">🏆</div>
+          <div class="badge-item" title="Racha de Fuego x5">🔥</div>
+          <div class="badge-item" title="Bug Hunter Experto">👾</div>
+          <div class="badge-item" title="Alquimista de Código">🧪</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ====================================================================
+         2. RIGHT SIDEBAR (PERFIL, RANKING Y MÉTRICAS GLOBALES)
+         ==================================================================== -->
+    <aside class="hud-sidebar glass-panel">
+      <!-- Tarjeta de Perfil -->
+      <section class="profile-card">
+        <div class="profile-main-info">
+          <div class="profile-avatar-preview" id="profile-avatar-preview" onclick="if(window.CatalogManager) window.CatalogManager.open()" title="Haz clic para abrir el catálogo de avatares">
+            <span id="profile-avatar-icon">👨‍🚀</span>
+            <div class="avatar-status-dot"></div>
+          </div>
+          <div class="profile-details">
+            <span class="alias">CodigoAlquimista</span>
+            <span class="role-tag"><span>⚡</span> Cyber Alchemist</span>
+            <span class="cohort-tag">Cohorte 2026-Alpha</span>
+          </div>
+        </div>
+        <button class="btn-open-catalog" id="btn-open-catalog" onclick="if(window.CatalogManager) window.CatalogManager.open()">
+          <span>🎭</span> Catálogo de Avatares
+        </button>
+      </section>
+
+      <!-- Tabla de Ranking de Cohorte -->
+      <section class="leaderboard-card glass-panel">
+        <div class="card-header">
+          <span class="card-title"><span class="icon">📊</span> Ranking de Cohorte</span>
+        </div>
+
+        <div class="cohort-metrics-summary">
+          <div class="metric-box">
+            <span class="metric-lbl">Percentil</span>
+            <span class="metric-val" id="metric-percentile">P58</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-lbl">Posición</span>
+            <span class="metric-val" id="metric-position">Top #11 <small style="font-size:0.65rem; color:#94a3b8;">/ 40</small></span>
+          </div>
+        </div>
+
+        <div class="ranking-list" id="cohort-ranking-list">
+          <!-- Generado dinámicamente -->
+        </div>
+      </section>
+
+      <!-- Misión Activa y Métricas Globales -->
+      <section class="progress-card glass-panel">
+        <div class="card-header">
+          <span class="card-title"><span class="icon">🎯</span> Progreso Global</span>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-cell">
+            <div class="lbl">Desafíos Superados</div>
+            <div class="val" id="metric-challenges-val">3/12</div>
+          </div>
+          <div class="stat-cell">
+            <div class="lbl">Portones de XP</div>
+            <div class="val" id="metric-gates-val">1/3</div>
+          </div>
+        </div>
+      </section>
+    </aside>
+
+    <!-- Guía de controles flotante inferior -->
+    <div class="controls-hint glass-panel">
+      <span><kbd>Click Izq + Arrastre</kbd> Rotar cámara</span>
+      <span><kbd>Click Derecho</kbd> Paneo</span>
+      <span><kbd>Rueda</kbd> Zoom</span>
+      <span><kbd>Click en Isla</kbd> Abrir Desafío</span>
+    </div>
+
+    <!-- Tooltip flotante 3D para inspección rápida de islas -->
+    <div id="node-tooltip" class="glass-panel"></div>
+
+    <!-- Contenedor de Notificaciones Toast -->
+    <div id="toast-container"></div>
+
+    <!-- ====================================================================
+         3. MODAL DE DESAFÍO / NODO (`#modal-desafio`)
+         ==================================================================== -->
+    <div class="modal-backdrop" id="modal-desafio">
+      <div class="modal-container challenge-modal-box">
+        <div class="modal-header">
+          <div class="modal-title-area">
+            <span class="challenge-node-icon" id="challenge-modal-icon">⚡</span>
+            <div>
+              <div class="challenge-region-tag" id="challenge-modal-region">REGIÓN 1: TIERRA DE ALGORITMOS</div>
+              <h2 id="challenge-modal-title">Nodo #4: Manejo de Estados Concurrente</h2>
+            </div>
+          </div>
+          <button class="btn-close-modal" id="btn-close-challenge-modal">✕</button>
+        </div>
+
+        <div class="modal-body challenge-modal-body">
+          <!-- Cuadrícula de Metadatos: Estado, Intentos Locales, Vidas Globales y Recompensa -->
+          <div class="challenge-meta-row">
+            <!-- 1. Estado -->
+            <div class="meta-item">
+              <span class="meta-lbl">Estado</span>
+              <div id="challenge-modal-status-badge" class="status-pill status-active">⚡ Habilitado</div>
+            </div>
+
+            <!-- 2. Intentos Locales del Nodo (Solo contador numérico) -->
+            <div class="meta-item">
+              <span class="meta-lbl">Intentos del Nodo</span>
+              <div class="node-attempts-badge" id="challenge-modal-attempts-box">
+                <span class="node-attempts-val" id="challenge-modal-attempts-val">3 / 3</span>
+              </div>
+            </div>
+
+            <!-- 3. Vidas Globales Disponibles (Corazones sincronizados con HUD) -->
+            <div class="meta-item highlight-lives-box">
+              <span class="meta-lbl">Vidas Globales</span>
+              <div class="global-lives-display" id="challenge-modal-global-lives">
+                <span class="heart-icon">❤️</span>
+                <span class="heart-icon">❤️</span>
+                <span class="heart-icon">❤️</span>
+              </div>
+            </div>
+
+            <!-- 4. Recompensa -->
+            <div class="meta-item">
+              <span class="meta-lbl">Recompensa</span>
+              <div class="reward-pill" id="challenge-modal-reward">+500 XP • 🟡 150</div>
+            </div>
+          </div>
+
+          <!-- Bloque Pedagógico -->
+          <div class="challenge-desc-box">
+            <h3>📘 Tema Pedagógico</h3>
+            <p id="challenge-modal-desc">
+              Sincronización de hilos, manejo de estados distribuidos y colas de mensajes en tiempo real. Domina los conceptos clave para evitar race conditions y optimizar el rendimiento.
+            </p>
+          </div>
+
+          <!-- Tags de Conceptos Clave -->
+          <div class="challenge-skills-container">
+            <span class="skills-title">Conceptos a evaluar:</span>
+            <div class="challenge-skills-list" id="challenge-modal-skills">
+              <span class="skill-tag">Programación Concurrente</span>
+              <span class="skill-tag">Web Workers</span>
+              <span class="skill-tag">Inmutabilidad</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer con Botón Dinámico de Acción -->
+        <div class="modal-footer challenge-modal-footer" id="challenge-modal-footer">
+          <!-- Inyectado dinámicamente por HUDController -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         4. MODAL DEL CATÁLOGO DE AVATARES (`#modal-catalogo`) CON SHOWCASE 3D
+         ==================================================================== -->
+    <div class="modal-backdrop" id="modal-catalogo">
+      <div class="modal-container catalog-modal-box">
+        <div class="modal-header">
+          <div class="modal-title-area">
+            <span style="font-size: 1.6rem;">🎭</span>
+            <div>
+              <h2>Catálogo de Avatares Voxel 3D</h2>
+              <span class="sub">Personaliza tu token de jugador 3D e identidad del HUD</span>
+            </div>
+          </div>
+          <button class="btn-close-modal" id="btn-close-modal">✕</button>
+        </div>
+
+        <div class="modal-body catalog-split-body">
+          <!-- Visor 3D Interactivo en Tiempo Real -->
+          <div class="avatar-3d-stage-box">
+            <div class="stage-header">
+              <span class="stage-lbl">Showcase 3D en Vivo</span>
+              <span class="stage-tag" id="stage-avatar-name">Cyber Astronaut</span>
+            </div>
+            <div class="stage-canvas-wrapper">
+              <canvas id="avatar-preview-canvas-3d"></canvas>
+              <div class="stage-controls-hint">🔄 Arrastra con el mouse para rotar 360°</div>
+            </div>
+          </div>
+
+          <!-- Grilla de Selección de Avatares -->
+          <div class="avatar-grid-wrapper">
+            <div class="avatar-grid" id="avatar-grid-container">
+              <!-- Renderizado dinámicamente por catalog.js -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three.js y OrbitControls vía CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <!-- Módulos de la Aplicación -->
+  <script src="js/audio.js"></script>
+  <script src="js/scene.js"></script>
+  <script src="js/islands.js"></script>
+  <script src="js/bridges.js"></script>
+  <script src="js/xpGate.js"></script>
+  <script src="js/avatar.js"></script>
+  <script src="js/catalog.js"></script>
+  <script src="js/hud.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
